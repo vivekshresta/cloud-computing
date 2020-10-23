@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class MapperNode {
     private static final Logger oLog = LogHelper.getLogger(MapperNode.class.getName());
-    public static final String MASTER_IPADDRESS = "35.203.61.180";
+    public static final String MASTER_IPADDRESS = "34.123.248.115";
     public static final String MASTER_PORT = "8080";
 
     private String fetchDataChunk(Client client, String fileID) {

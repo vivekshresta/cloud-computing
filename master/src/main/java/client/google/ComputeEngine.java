@@ -48,8 +48,6 @@ import java.util.logging.Logger;
 /**
  * Command-line sample to demo listing Google Compute Engine instances using Java and the Google
  * Compute Engine API.
- *
- * @author Jonathan Simon
  */
 public class ComputeEngine {
     private static final Logger oLog = LogHelper.getLogger(ComputeEngine.class.getName());
@@ -64,7 +62,7 @@ public class ComputeEngine {
     private static final String PROJECT_ID = "vivekshresta-bandaru";
 
     /** Set Compute Engine zone. */
-    private static final String ZONE_NAME = "us-central1-a";
+    private static final String ZONE_NAME = "us-central1-f";
 
     /** Set the name of the sample VM instance to be created. */
     private static final String SAMPLE_INSTANCE_NAME = "mapper";
@@ -74,7 +72,7 @@ public class ComputeEngine {
             "https://www.googleapis.com/compute/v1/projects/";
     //TODO: Change this
     private static final String SOURCE_IMAGE_PATH =
-            "vivekshresta-bandaru/global/images/master-image";
+            "vivekshresta-bandaru/global/images/cloud-image";
 
     /** Set the Network configuration values of the sample VM instance to be created. */
     private static final String NETWORK_INTERFACE_CONFIG = "ONE_TO_ONE_NAT";
@@ -230,7 +228,7 @@ public class ComputeEngine {
 
         // Initialize the service account to be used by the VM Instance and set the API access scopes.
         ServiceAccount account = new ServiceAccount();
-        account.setEmail("68769154931-compute@developer.gserviceaccount.com");
+        account.setEmail("vivekshresta@vivekshresta-bandaru.iam.gserviceaccount.com");
         List<String> scopes = new ArrayList<>();
         scopes.add("https://www.googleapis.com/auth/devstorage.full_control");
         scopes.add("https://www.googleapis.com/auth/compute");
