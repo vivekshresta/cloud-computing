@@ -1,0 +1,78 @@
+buildscript {
+    ext {
+        depManagementVersion = "1.0.5.RELEASE"
+    }
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath ("io.spring.gradle:dependency-management-plugin:${depManagementVersion}")
+    }
+}
+
+allprojects {
+    group 'com.cloud'
+    version '1.0-SNAPSHOT'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    ext {
+        SLF4J_VERSION = '1.7.10'
+        JUNIT_VERSION = '4.11'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+        }
+    }
+
+    dependencies {
+//        compile "org.slf4j:slf4j-api:${SLF4J_VERSION}"
+//        compile "org.slf4j:slf4j-log4j12:${SLF4J_VERSION}"
+
+        testCompile "junit:junit:${JUNIT_VERSION}"
+    }
+}
+
+//plugins {
+//    id 'org.springframework.boot' version '2.2.4.RELEASE'
+//    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+//    id 'com.palantir.docker' version '0.22.1'
+//    id 'java'
+//}
+//
+//apply plugin: 'io.spring.dependency-management'
+//
+//group 'MapReduce'
+//version '1.0-SNAPSHOT'
+//
+//repositories {
+//    mavenCentral()
+//}
+//
+//dependencies {
+//    // https://mvnrepository.com/artifact/org.springframework/spring-web
+//    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+//
+//    implementation('org.springframework.boot:spring-boot-starter-web')
+//    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+//
+//    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+//    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+//
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
+//}

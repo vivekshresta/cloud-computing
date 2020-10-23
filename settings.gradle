@@ -1,0 +1,8 @@
+rootProject.name = 'MapReduce'
+
+include 'kvstore'
+include 'master'
+include 'mapper'
+include 'reducer'
+include 'user-programs'
+
