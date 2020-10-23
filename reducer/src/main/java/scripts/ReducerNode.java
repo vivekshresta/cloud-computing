@@ -1,37 +1,43 @@
 package scripts;
 
 import client.Client;
+import client.HttpClient;
 import functionality.api.Reducer;
 import functionality.impl.InvertedIndexReducer;
 import functionality.impl.WordCountReducer;
+import helper.LogHelper;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ReducerNode {
+    private static final Logger oLog = LogHelper.getLogger(ReducerNode.class.getName());
+    public static final String MASTER_IPADDRESS = "35.203.61.180";
+    public static final String MASTER_PORT = "8080";
 
     public static void main(String[] args) {
         ReducerNode reducerNode = new ReducerNode();
-        System.out.println(Arrays.toString(args));
+        reducerNode.run();
+    }
+
+    private void run() {
+        Map<String, String> postBody = new HttpClient(MASTER_IPADDRESS, MASTER_PORT, "reducerdata").getDataFromMaster();
+        oLog.info(postBody.toString());
         Client client = null;
         try {
-            client = new Client(args[1], Integer.parseInt(args[2]));
-            reducerNode.run(client, args[0], args[3]);
-        } catch (IOException e) {
-            e.printStackTrace();
+            client = new Client(postBody.get("kvStoreAddress"), Integer.parseInt(postBody.get("kvStorePort")));
+            List<String[]> kvPairs = getKVPairs(client, "reducer_" + postBody.get("reducerID"));
+            Reducer reducer = getReducer(postBody.get("functionalityName"));
+            Map<String, String> reducedData = reduceData(reducer, kvPairs);
+            writeToKVStore(client, reducedData, "output");
+        } catch (Exception e) {
+            oLog.warning(Arrays.toString(e.getStackTrace()));
         } finally {
             if(client != null)
                 client.destroy();
         }
-    }
-
-    private void run(Client client, String functionality, String reducerID) {
-        List<String[]> kvPairs = getKVPairs(client, "reducer_" + reducerID);
-        Reducer reducer = getReducer(functionality);
-        Map<String, String> reducedData = reduceData(reducer, kvPairs);
-        writeToKVStore(client, reducedData, "output");
     }
 
     private void writeToKVStore(Client client, Map<String, String> kvPairs, String fileID) {

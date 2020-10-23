@@ -19,6 +19,11 @@ public class HttpAPI {
     private static final Logger oLog = LogHelper.getLogger(HttpAPI.class.getName());
     private int numberOfMappers;
     private int numberOfReducers;
+    private String functionalityName;
+    private String masterAddress;
+    private String masterPort;
+    private String kvStoreAddress;
+    private String kvStorePort;
 
     @Autowired
     public PostBodyParser postBodyParser;
@@ -48,23 +53,21 @@ public class HttpAPI {
         oLog.info("Data sent from client: " + postBody.toString());
 
         String fileLocation = postBody.get("fileLocation");
-        String numberOfMappers = postBody.get("numberOfMappers");
-        String numberOfReducers = postBody.get("numberOfReducers");
-        String functionalityName = postBody.get("functionalityName");
-        String masterAddress = postBody.get("masterAddress");
-        String masterPort = postBody.get("masterPort");
-        String kvStoreAddress = postBody.get("kvStoreAddress");
-        String kvStorePort = postBody.get("kvStorePort");
-
         try {
-            this.numberOfMappers = Integer.parseInt(numberOfMappers);
-            this.numberOfReducers = Integer.parseInt(numberOfReducers);
+            numberOfMappers = Integer.parseInt(postBody.get("numberOfMappers"));
+            numberOfReducers = Integer.parseInt(postBody.get("numberOfReducers"));
         } catch(Exception e) {
             oLog.warning("Failed parsing numbers");
         }
 
-        MasterExecutor masterExecutor = new MasterExecutor(fileLocation, numberOfMappers, numberOfReducers, functionalityName,
-                masterAddress, masterPort, kvStoreAddress, kvStorePort);
+        functionalityName = postBody.get("functionalityName");
+        masterAddress = postBody.get("masterAddress");
+        masterPort = postBody.get("masterPort");
+        kvStoreAddress = postBody.get("kvStoreAddress");
+        kvStorePort = postBody.get("kvStorePort");
+
+        MasterExecutor masterExecutor = new MasterExecutor(fileLocation, String.valueOf(numberOfMappers), String.valueOf(numberOfReducers),
+                functionalityName, masterAddress, masterPort, kvStoreAddress, kvStorePort);
         String output = masterExecutor.run();
         oLog.info("Final output in output.txt in kv store");
 
@@ -81,9 +84,27 @@ public class HttpAPI {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "/assignmapperid")
-    public ResponseEntity<?> assignMapper(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok(--numberOfMappers);
+    @RequestMapping(value = "/mapperdata")
+    public ResponseEntity<?> mapperData(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> data = new HashMap<>();
+        data.put("mapperID", String.valueOf(--numberOfMappers));
+        data.put("numberOfReducers", String.valueOf(numberOfReducers));
+        data.put("functionalityName", functionalityName);
+        data.put("kvStoreAddress", kvStoreAddress);
+        data.put("kvStorePort", kvStorePort);
+
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/reducerdata")
+    public ResponseEntity<?> reducerData(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> data = new HashMap<>();
+        data.put("reducerID", String.valueOf(--numberOfReducers));
+        data.put("functionalityName", functionalityName);
+        data.put("kvStoreAddress", kvStoreAddress);
+        data.put("kvStorePort", kvStorePort);
+
+        return ResponseEntity.ok(data);
     }
 
 }

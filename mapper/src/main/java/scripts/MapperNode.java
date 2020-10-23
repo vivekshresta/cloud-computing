@@ -1,18 +1,19 @@
 package scripts;
 
-
 import client.Client;
+import client.HttpClient;
 import functionality.api.Mapper;
 import functionality.impl.InvertedIndexMapper;
 import functionality.impl.WordCountMapper;
+import helper.LogHelper;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class MapperNode {
+    private static final Logger oLog = LogHelper.getLogger(MapperNode.class.getName());
+    public static final String MASTER_IPADDRESS = "35.203.61.180";
+    public static final String MASTER_PORT = "8080";
 
     private String fetchDataChunk(Client client, String fileID) {
         return client.getDataChunk(fileID);
@@ -49,26 +50,38 @@ public class MapperNode {
         return Math.abs(key.hashCode() % n);
     }
 
-    private void run(Client client, String functionality, int numberOfReducers, String mapperID) {
-        String dataChunk = fetchDataChunk(client, "mapper_" + mapperID);
-        Mapper mapper = getMapper(functionality);
-        List<String[]> kvPairs = generateKVPairs(mapper, dataChunk, mapperID);
-        distributeKVPairs(client, kvPairs, numberOfReducers);
-    }
-
-    public static void main(String[] args) {
-        MapperNode mapperNode = new MapperNode();
-        System.out.println(Arrays.toString(args));
+    private void run() {
+        Map<String, String> postBody = new HttpClient(MASTER_IPADDRESS, MASTER_PORT, "mapperdata").getDataFromMaster();
+        oLog.info(postBody.toString());
         Client client = null;
         try {
-            client = new Client(args[2], Integer.parseInt(args[3]));
-            mapperNode.run(client, args[0], Integer.parseInt(args[1]), args[4]);
-        } catch (IOException e) {
-            e.printStackTrace();
+            client = new Client(postBody.get("kvStoreAddress"), Integer.parseInt(postBody.get("kvStorePort")));
+            String mapperID = postBody.get("mapperID");
+            String dataChunk = fetchDataChunk(client, "mapper_" + mapperID);
+            Mapper mapper = getMapper(postBody.get("functionalityName"));
+            List<String[]> kvPairs = generateKVPairs(mapper, dataChunk, mapperID);
+            distributeKVPairs(client, kvPairs, Integer.parseInt(postBody.get("numberOfReducers")));
+        } catch (Exception e) {
+            oLog.warning(Arrays.toString(e.getStackTrace()));
         } finally {
             if(client != null)
                 client.destroy();
         }
+    }
+
+
+    public static void main(String[] args) {
+        //arg0 is mapperID
+        //arg1 is numberOfReducers
+        //arg2 is FunctionalityName
+        //arg3 is masterAddress
+        //arg4 is master port
+        //arg5 is kv store address
+        //arg6 is kv store port
+
+        MapperNode mapperNode = new MapperNode();
+        mapperNode.run();
+
     }
 
 }
