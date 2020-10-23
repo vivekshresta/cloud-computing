@@ -1,9 +1,11 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'MapReduce'
 version '1.0-SNAPSHOT'
+mainClassName = 'scripts.ReducerNode.java'
 
 repositories {
     mavenCentral()
