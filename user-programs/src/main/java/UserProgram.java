@@ -1,14 +1,23 @@
 
+import client.google.ComputeEngine;
+import client.google.ComputeEngineHelper;
+import com.google.api.services.compute.Compute;
+import com.google.api.services.compute.model.Operation;
 import helper.LogHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class UserProgram {
     private static Logger oLog = LogHelper.getLogger(UserProgram.class.getName());
+    private static final String MASTER_IP_ADDRESS = "104.197.231.179";
+    private static final String MASTER_PORT = "8080";
+    private static final String KV_STORE_IP_ADDRESS = "34.123.248.115";
+    private static final String KV_STORE_PORT = "10254";
 
     public static void main(String[] args) {
         //arg0 is input file location
@@ -19,6 +28,23 @@ public class UserProgram {
         //arg5 is port number
 
         oLog.info("Starting User program");
+//        try {
+////            Compute computeEngine = ComputeEngine.getComputeEngine();
+////            Map<String, String> vms = new ComputeEngineHelper().initiateCluster("KVStore",
+////                    "test-vm", 8080, 8080);
+//            Compute computeEngine = ComputeEngine.getComputeEngine();
+//            //Operation operation = ComputeEngine.startInstance(computeEngine, "master");
+//            Operation operation = ComputeEngine.startInstance(computeEngine, "kv-store");
+//            System.out.println("Waiting for operation completion...");
+//            Operation.Error error = ComputeEngine.blockUntilComplete(computeEngine, operation, ComputeEngine.OPERATION_TIMEOUT_MILLIS);
+//            if (error == null) {
+//                System.out.println("Success!");
+//            } else {
+//                System.out.println(error.toPrettyString());
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 //        Process kvStore = createProcess(new ArrayList<>(), Server.class.getName());
 //        try {
 //            Thread.sleep(10000);

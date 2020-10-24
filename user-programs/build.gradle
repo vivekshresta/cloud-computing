@@ -9,6 +9,16 @@ repositories {
     mavenCentral()
 }
 
+compileJava   {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 dependencies {
+    //google api's
+    compile group: 'com.google.apis', name: 'google-api-services-compute', version: 'v1-rev235-1.25.0'
+    compile group: 'com.google.auth', name: 'google-auth-library-oauth2-http', version: '0.22.0'
+    compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

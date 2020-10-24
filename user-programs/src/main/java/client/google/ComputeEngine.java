@@ -104,8 +104,8 @@ public class ComputeEngine {
             HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credential);
             // Create Compute Engine object for listing instances.
             compute = new Compute.Builder(httpTransport, JSON_FACTORY, requestInitializer)
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
+                            .setApplicationName(APPLICATION_NAME)
+                            .build();
         } catch (Exception e) {
             oLog.warning(e.getMessage());
         } catch (Throwable t) {
@@ -144,7 +144,7 @@ public class ComputeEngine {
     // [END list_instances]
 
     // [START create_instances]
-    public static Operation startInstance(Compute compute, String instanceName, String script) throws IOException {
+    public static Operation startInstance(Compute compute, String instanceName) throws IOException {
         System.out.println("================== Starting New Instance ==================");
 
         // Create VM Instance object with the required properties.
@@ -206,7 +206,7 @@ public class ComputeEngine {
         List<Metadata.Items> items = new ArrayList<>();
 
         String usingSystemProperty = System.getProperty("user.dir");
-        String initPath = usingSystemProperty + "/master/src/main/resources/scripts/" + script;
+        String initPath = usingSystemProperty + "/user-programs/src/main/resources/scripts/init.sh";
         //initPath = String.format("gs://%s/anit.sh", BUCKET_ID);
         items.add(getItem("startup-script", getScriptData(initPath)));
         items.add(getItem("url", "http://storage.googleapis.com/gce-demo-input/photo.jpg"));
@@ -244,7 +244,7 @@ public class ComputeEngine {
         return item;
     }
 
-    public static Operation deleteInstance(Compute compute, String instanceName) throws Exception {
+    private static Operation deleteInstance(Compute compute, String instanceName) throws Exception {
         System.out.println(
                 "================== Deleting Instance " + instanceName + " ==================");
         Compute.Instances.Delete delete =

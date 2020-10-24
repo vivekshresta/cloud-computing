@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 
 public class MapperNode {
     private static final Logger oLog = LogHelper.getLogger(MapperNode.class.getName());
-    public static final String MASTER_IPADDRESS = "34.123.248.115";
-    public static final String MASTER_PORT = "8080";
+    private static final String MASTER_IP_ADDRESS = "104.197.231.179";
+    private static final String MASTER_PORT = "8080";
 
     private String fetchDataChunk(Client client, String fileID) {
         return client.getDataChunk(fileID);
@@ -51,7 +51,7 @@ public class MapperNode {
     }
 
     private void run() {
-        Map<String, String> postBody = new HttpClient(MASTER_IPADDRESS, MASTER_PORT, "mapperdata").getDataFromMaster();
+        Map<String, String> postBody = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT, "mapperdata").getDataFromMaster();
         oLog.info(postBody.toString());
         Client client = null;
         try {

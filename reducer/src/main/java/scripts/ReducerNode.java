@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 public class ReducerNode {
     private static final Logger oLog = LogHelper.getLogger(ReducerNode.class.getName());
-    public static final String MASTER_IPADDRESS = "34.123.248.115";
-    public static final String MASTER_PORT = "8080";
+    private static final String MASTER_IP_ADDRESS = "104.197.231.179";
+    private static final String MASTER_PORT = "8080";
 
     public static void main(String[] args) {
         ReducerNode reducerNode = new ReducerNode();
@@ -23,7 +23,7 @@ public class ReducerNode {
     }
 
     private void run() {
-        Map<String, String> postBody = new HttpClient(MASTER_IPADDRESS, MASTER_PORT, "reducerdata").getDataFromMaster();
+        Map<String, String> postBody = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT, "reducerdata").getDataFromMaster();
         oLog.info(postBody.toString());
         Client client = null;
         try {

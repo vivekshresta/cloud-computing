@@ -1,6 +1,9 @@
 package scripts;
 
 import client.Client;
+import client.google.ComputeEngine;
+import com.google.api.services.compute.Compute;
+import com.google.api.services.compute.model.Operation;
 import helper.LogHelper;
 
 import java.io.File;
@@ -17,8 +20,8 @@ import java.util.logging.Logger;
 public class MasterExecutor {
     private static final Logger oLog = LogHelper.getLogger(MasterExecutor.class.getName());
     private final String filePath;
-    private final String numberOfMappers;
-    private final String numberOfReducers;
+    private final int numberOfMappers;
+    private final int numberOfReducers;
     private final String functionalityName;
     private final String masterAddress;
     private final String masterPort;
@@ -29,8 +32,8 @@ public class MasterExecutor {
     public MasterExecutor(String filePath, String numberOfMappers, String numberOfReducers,
                           String functionalityName, String masterAddress, String masterPort, String kvStoreAddress, String kvStorePort) {
         this.filePath = filePath;
-        this.numberOfMappers = numberOfMappers;
-        this.numberOfReducers = numberOfReducers;
+        this.numberOfMappers = Integer.parseInt(numberOfMappers);
+        this.numberOfReducers = Integer.parseInt(numberOfReducers);
         this.functionalityName = functionalityName;
         this.masterAddress = masterAddress;
         this.masterPort = masterPort;
@@ -56,12 +59,38 @@ public class MasterExecutor {
         return getFinalOutput();
     }
 
-    private String getFinalOutput() {
+    public String getFinalOutput() {
         String output = kvStoreClient.getFileData("output.txt");
         return output.trim();
     }
 
-    private void waitTillProcessesExecution(Process[] processes) {
+    public void createMapperVMs() throws Exception {
+        createVMs("mapper_", "mapper_init.sh");
+    }
+
+    public void createReducerVMs() throws Exception {
+        createVMs("reducer_", "reducer_init.sh");
+    }
+
+    private void createVMs(String script, String prefix) throws Exception {
+        Compute computeEngine = ComputeEngine.getComputeEngine();
+        //Operation operation = ComputeEngine.startInstance(computeEngine, "master");
+        List<Operation> operations = new ArrayList<>();
+        for (int i = 0; i < numberOfMappers; i++) {
+            operations.add(ComputeEngine.startInstance(computeEngine, prefix + i, script));
+        }
+
+        //lets wait till all the execution is complete
+        for (Operation operation : operations) {
+            Operation.Error error = ComputeEngine.blockUntilComplete(computeEngine, operation, ComputeEngine.OPERATION_TIMEOUT_MILLIS);
+            if (error == null)
+                oLog.info("Success!");
+            else
+                oLog.warning(error.toPrettyString());
+        }
+    }
+
+    public void waitTillProcessesExecution(Process[] processes) {
         int i = 0;
         while(i != processes.length)
             for (i = 0; i < processes.length; i++)
@@ -69,59 +98,9 @@ public class MasterExecutor {
                     break;
     }
 
-    private Process[] createProcesses(int numberOfProcesses, String className) {
-        return createProcesses(false, numberOfProcesses, className);
-    }
-
-    private Process[] createProcesses(boolean shouldAddNumberOfReducers, int numberOfProcesses, String className) {
-        Process[] processes = new Process[numberOfProcesses];
-
-        List<String> command = constructArguments(shouldAddNumberOfReducers, className);
-        oLog.info("Arguments while constructing a process: " + command);
-        ProcessBuilder builder = new ProcessBuilder(command);
+    public void createChunks() {
         try {
-            for (int i = 0; i < numberOfProcesses; i++) {
-                command.add(String.valueOf(i));
-                processes[i] = builder.inheritIO().start();
-                command.remove(command.size() - 1);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return processes;
-    }
-
-    private List<String> constructArguments(boolean shouldAddNumberOfReducers, String className) {
-        String javaHome = System.getProperty("java.home");
-        String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-        String classPath = System.getProperty("java.class.path");
-
-        List<String> command = new ArrayList<>();
-        command.add(javaBin);
-        command.add("-cp");
-        command.add(classPath);
-        command.add(className);
-        command.addAll(getProcessStartArguments(shouldAddNumberOfReducers));
-
-        return command;
-    }
-
-    private List<String> getProcessStartArguments(boolean shouldAddNumberOfReducers) {
-        List<String> args = new ArrayList<>();
-        args.add(functionalityName);
-        if(shouldAddNumberOfReducers)
-            args.add(numberOfReducers);
-
-        args.add(kvStoreAddress);
-        args.add(String.valueOf(kvStorePort));
-
-        return args;
-    }
-
-    private void createChunks() {
-        try {
-            double linesPerChunk = getNumberOfLinesPerChunk(filePath, Integer.parseInt(numberOfReducers));
+            double linesPerChunk = getNumberOfLinesPerChunk(filePath, numberOfReducers);
             File myObj = new File(filePath);
             Scanner myReader = new Scanner(myObj);
 
@@ -133,12 +112,23 @@ public class MasterExecutor {
         }
     }
 
-    private double getNumberOfLinesPerChunk(String filePath, double numberOfReducers) throws IOException {
+    public double getNumberOfLinesPerChunk(String filePath, double numberOfReducers) throws IOException {
         Path path = Paths.get(filePath);
         return Math.ceil(Files.lines(path).count() / numberOfReducers);
     }
 
-    private boolean isBlank(String str) {
+    public void deleteVMs() throws Exception {
+        Compute computeEngine = ComputeEngine.getComputeEngine();
+        for (int i = 0; i < numberOfMappers; i++) {
+            ComputeEngine.deleteInstance(computeEngine, "mapper_" + i);
+        }
+
+        for (int i = 0; i < numberOfReducers; i++) {
+            ComputeEngine.deleteInstance(computeEngine, "reducer_" + i);
+        }
+    }
+
+    public boolean isBlank(String str) {
         return str == null || str.trim().isEmpty();
     }
 
