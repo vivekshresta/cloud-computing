@@ -89,7 +89,7 @@ public class ComputeEngine {
             // Authenticate using Google Application Default Credentials.
             //GoogleCredentials credential = GoogleCredentials.getApplicationDefault();
             String usingSystemProperty = System.getProperty("user.dir");
-            String credentialPath = usingSystemProperty + "/user-programs/src/main/resources/credentials/vivekshresta-bandaru-0e6764c75944.json";
+            String credentialPath = usingSystemProperty + "/master/src/main/resources/credentials/vivekshresta-bandaru-0e6764c75944.json";
             GoogleCredentials credential = GoogleCredentials.fromStream(new FileInputStream(credentialPath))
                     .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
 

@@ -14,16 +14,25 @@ import java.util.stream.Collectors;
 @Service
 public class PostBodyParser {
 
-    public Map<String, String> getPostBodyInAMap(HttpServletRequest request) {
-
-        Map<String, String> postBody = new HashMap<>();
-        try {
-            populatePostBody(postBody, request.getReader().lines().collect(Collectors.joining()));
-        } catch (IOException e) {
-            e.printStackTrace();
+    public Map<String, String> getParams(HttpServletRequest request) {
+        String queryString = request.getQueryString();
+        if(request.getMethod().equals("GET")) {
+            Map<String, String> params = new HashMap<>();
+            String[] kvPairs = queryString.split("&");
+            for(String kvPair : kvPairs) {
+                String[] pairs = kvPair.split("=");
+                params.put(pairs[0], pairs[1]);
+            }
+            return params;
+        } else {
+            Map<String, String> postBody = new HashMap<>();
+            try {
+                populatePostBody(postBody, request.getReader().lines().collect(Collectors.joining()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return postBody;
         }
-
-        return postBody;
     }
 
     protected void populatePostBody(Map<String, String> parameterMap, String body) {

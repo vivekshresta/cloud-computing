@@ -2,7 +2,6 @@ package http.service;
 
 import helper.LogHelper;
 import helper.PostBodyParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +34,6 @@ public class HttpAPI {
     private int reducersCount;
     private String output;
 
-    @Autowired
-    public PostBodyParser postBodyParser;
-
     @RequestMapping(value = "/abc")
     public ResponseEntity<?> test(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("yo");
@@ -60,7 +56,8 @@ public class HttpAPI {
         //arg7 is kv store port
 
         Map<String, String> result = new HashMap<>();
-        Map<String, String> postBody = postBodyParser.getPostBodyInAMap(request);
+        PostBodyParser postBodyParser = new PostBodyParser();
+        Map<String, String> postBody = postBodyParser.getParams(request);
         oLog.info("Data sent from client: " + postBody.toString());
 
         String fileLocation = postBody.get("fileLocation");
@@ -89,7 +86,7 @@ public class HttpAPI {
             result.put("status", "created mappers");
         } catch (Exception e) {
             oLog.warning("Failed creating masters");
-            oLog.warning(Arrays.toString(e.getStackTrace()));
+            oLog.warning(e.getMessage());
             result.put("status", "failed creating masters");
         }
 
@@ -139,6 +136,7 @@ public class HttpAPI {
     public ResponseEntity<?> mapperExecutionComplete(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> result = new HashMap<>();
         numberOfMappers++;
+        System.out.println(numberOfMappers);
         if(numberOfMappers == mappersCount) {
             //spawn reducer VM's
             try {

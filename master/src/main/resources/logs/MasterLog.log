@@ -1,0 +1,6 @@
+Oct 23, 2020 11:13:38 PM http.service.HttpAPI mapReduce
+INFO: Data sent from client: {masterAddress=104.197.231.179, masterPort=8080, functionalityName=WordCount, kvStoreAddress=34.123.248.115, numberOfReducers=4, fileLocation=/master/src/main/resources/master/sample.txt, numberOfMappers=4, kvStorePort=10254}
+Oct 23, 2020 11:13:38 PM http.service.HttpAPI mapReduce
+INFO: Chunks created
+Oct 23, 2020 11:14:16 PM http.service.HttpAPI mapReduce
+INFO: Mappers execution completed

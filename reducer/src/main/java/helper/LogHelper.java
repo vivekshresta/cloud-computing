@@ -11,7 +11,7 @@ public class LogHelper {
         FileHandler fh = null;
         try {
             String usingSystemProperty = System.getProperty("user.dir");
-            fh = new FileHandler(usingSystemProperty + "/src/main/resources/logs/ReducerLog.log");
+            fh = new FileHandler(usingSystemProperty + "/reducer/src/main/resources/logs/ReducerLog.log");
         } catch (Exception e) {
             e.printStackTrace();
         }

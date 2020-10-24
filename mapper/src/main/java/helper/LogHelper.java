@@ -11,7 +11,7 @@ public class LogHelper {
         FileHandler fh = null;
         try {
             String usingSystemProperty = System.getProperty("user.dir");
-            fh = new FileHandler(usingSystemProperty + "/src/main/resources/logs/MapperLog.log");
+            fh = new FileHandler(usingSystemProperty + "/mapper/src/main/resources/logs/MapperLog.log");
         } catch (Exception e) {
             e.printStackTrace();
         }

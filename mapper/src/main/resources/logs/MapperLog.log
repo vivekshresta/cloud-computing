@@ -1,0 +1,4 @@
+Oct 23, 2020 9:55:28 PM scripts.MapperNode run
+INFO: {functionalityName=null, kvStoreAddress=34.123.248.115, numberOfReducers=0, mapperID=-2, kvStorePort=10254}
+Oct 23, 2020 9:55:29 PM scripts.MapperNode run
+WARNING: [scripts.MapperNode.getMapper(MapperNode.java:23), scripts.MapperNode.run(MapperNode.java:62), scripts.MapperNode.main(MapperNode.java:85)]

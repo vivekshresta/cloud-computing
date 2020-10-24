@@ -11,7 +11,7 @@ public class LogHelper {
         FileHandler fh = null;
         try {
             String usingSystemProperty = System.getProperty("user.dir");
-            fh = new FileHandler(usingSystemProperty + "/src/main/resources/logs/KVStoreLog.log");
+            fh = new FileHandler(usingSystemProperty + "/kvstore/src/main/resources/logs/KVStoreLog.log");
         } catch (Exception e) {
             e.printStackTrace();
         }

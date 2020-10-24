@@ -65,14 +65,14 @@ public class MasterExecutor {
     }
 
     public void createMapperVMs() throws Exception {
-        createVMs("mapper_", "mapper_init.sh");
+        createVMs("mapper-", "mapper.sh");
     }
 
     public void createReducerVMs() throws Exception {
-        createVMs("reducer_", "reducer_init.sh");
+        createVMs("reducer-", "reducer.sh");
     }
 
-    private void createVMs(String script, String prefix) throws Exception {
+    private void createVMs(String prefix, String script) throws Exception {
         Compute computeEngine = ComputeEngine.getComputeEngine();
         //Operation operation = ComputeEngine.startInstance(computeEngine, "master");
         List<Operation> operations = new ArrayList<>();
@@ -113,7 +113,8 @@ public class MasterExecutor {
     }
 
     public double getNumberOfLinesPerChunk(String filePath, double numberOfReducers) throws IOException {
-        Path path = Paths.get(filePath);
+        String usingSystemProperty = System.getProperty("user.dir");
+        Path path = Paths.get(usingSystemProperty + filePath);
         return Math.ceil(Files.lines(path).count() / numberOfReducers);
     }
 
