@@ -23,15 +23,17 @@ public class ReducerNode {
     }
 
     private void run() {
-        Map<String, String> postBody = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT, "reducerdata").getDataFromMaster();
-        oLog.info(postBody.toString());
+        HttpClient httpClient = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT);
+        Map<String, String> data = httpClient.getDataFromMaster("reducerdata");
+        oLog.info(data.toString());
         Client client = null;
         try {
-            client = new Client(postBody.get("kvStoreAddress"), Integer.parseInt(postBody.get("kvStorePort")));
-            List<String[]> kvPairs = getKVPairs(client, "reducer_" + postBody.get("reducerID"));
-            Reducer reducer = getReducer(postBody.get("functionalityName"));
+            client = new Client(data.get("kvStoreAddress"), Integer.parseInt(data.get("kvStorePort")));
+            List<String[]> kvPairs = getKVPairs(client, "reducer_" + data.get("reducerID"));
+            Reducer reducer = getReducer(data.get("functionalityName"));
             Map<String, String> reducedData = reduceData(reducer, kvPairs);
             writeToKVStore(client, reducedData, "output");
+            httpClient.intimateMasterAboutCompletion("reducercomplete");
         } catch (Exception e) {
             oLog.warning(Arrays.toString(e.getStackTrace()));
         } finally {

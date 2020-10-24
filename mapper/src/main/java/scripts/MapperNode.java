@@ -51,16 +51,18 @@ public class MapperNode {
     }
 
     private void run() {
-        Map<String, String> postBody = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT, "mapperdata").getDataFromMaster();
-        oLog.info(postBody.toString());
+        HttpClient httpClient = new HttpClient(MASTER_IP_ADDRESS, MASTER_PORT);
+        Map<String, String> data = httpClient.getDataFromMaster("mapperdata");
+        oLog.info(data.toString());
         Client client = null;
         try {
-            client = new Client(postBody.get("kvStoreAddress"), Integer.parseInt(postBody.get("kvStorePort")));
-            String mapperID = postBody.get("mapperID");
+            client = new Client(data.get("kvStoreAddress"), Integer.parseInt(data.get("kvStorePort")));
+            String mapperID = data.get("mapperID");
             String dataChunk = fetchDataChunk(client, "mapper_" + mapperID);
-            Mapper mapper = getMapper(postBody.get("functionalityName"));
+            Mapper mapper = getMapper(data.get("functionalityName"));
             List<String[]> kvPairs = generateKVPairs(mapper, dataChunk, mapperID);
-            distributeKVPairs(client, kvPairs, Integer.parseInt(postBody.get("numberOfReducers")));
+            distributeKVPairs(client, kvPairs, Integer.parseInt(data.get("numberOfReducers")));
+            httpClient.intimateMasterAboutCompletion("mappercomplete");
         } catch (Exception e) {
             oLog.warning(Arrays.toString(e.getStackTrace()));
         } finally {

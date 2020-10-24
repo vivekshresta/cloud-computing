@@ -5,7 +5,7 @@ plugins {
 
 group 'MapReduce'
 version '1.0-SNAPSHOT'
-mainClassName = 'scripts.ReducerNode.java'
+mainClassName = 'scripts.ReducerNode'
 
 repositories {
     mavenCentral()
